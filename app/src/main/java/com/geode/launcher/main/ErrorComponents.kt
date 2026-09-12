@@ -332,10 +332,7 @@ fun ErrorInfoActions(extraDetails: String?, modifier: Modifier = Modifier) {
 
 @Composable
 fun DownloadRecommendation(needsUniversal: Boolean, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     val version = BuildConfig.VERSION_NAME
-
-    val showDownload = remember { GamePackageUtils.showDownloadBadge(context.packageManager) }
 
     val downloadBase = "https://github.com/geode-sdk/android-launcher/releases/download/$version"
     val legacyDownloadUrl = "$downloadBase/geode-launcher-v$version-android32.apk"
@@ -364,10 +361,6 @@ fun DownloadRecommendation(needsUniversal: Boolean, modifier: Modifier = Modifie
     ) {
         Text(promptTitle)
         Text("\u2022\u00A0\u00A0$reinstallText")
-
-        if (showDownload) {
-            GooglePlayBadge()
-        }
 
         Text("\u2022\u00A0\u00A0$recommendationText")
 

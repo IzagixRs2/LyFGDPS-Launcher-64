@@ -66,6 +66,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
@@ -450,15 +451,6 @@ fun LaunchProgressCard(
                     inProgress = uiState.inProgress
                 )
 
-                if (uiState.reason.isGameInstallIssue()) {
-                    val context = LocalContext.current
-                    val showDownload = remember { GamePackageUtils.showDownloadBadge(context.packageManager) }
-
-                    if (showDownload) {
-                        GooglePlayBadge(modifier = Modifier.align(Alignment.CenterHorizontally))
-                    }
-                }
-
                 if (uiState.reason.allowsRetry()) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
@@ -721,46 +713,23 @@ fun AnimatedLogo(modifier: Modifier = Modifier, spec: AnimatedIconSpec) {
 
 @Composable
 fun GeodeLogo(modifier: Modifier = Modifier, shouldAnimate: Boolean = false, basePalette: BrandPalette = geodeColorPalette) {
-    FlowRow(
+    Row(
         horizontalArrangement = Arrangement.Center,
-        itemVerticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        val theme = LocalTheme.current
-
-        if (basePalette.animatedIcon != null) {
-            Crossfade(
-                targetState = shouldAnimate,
-                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
-                label="logo fade"
-            ) { screen ->
-                when (screen) {
-                    true -> AnimatedLogo(modifier = Modifier.size(64.dp, 64.dp), spec = basePalette.animatedIcon)
-                    false -> Image(
-                        painterResource(if (theme == LIGHT)
-                            basePalette.lightLogo else basePalette.darkLogo
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp, 64.dp)
-                    )
-                }
-            }
-        } else {
-            Image(
-                painterResource(if (theme == LIGHT)
-                    basePalette.lightLogo else basePalette.darkLogo
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(84.dp, 84.dp)
-            )
-        }
+        Image(
+            painter = painterResource(R.drawable.lyfgdps_logo_foreground),
+            contentDescription = stringResource(R.string.launcher_logo_alt),
+            modifier = Modifier.size(84.dp),
+            contentScale = ContentScale.Fit
+        )
 
         Text(
-            stringResource(basePalette.title),
+            stringResource(R.string.launcher_title),
             style = basePalette.titleFont,
             fontSize = 64.sp,
-            modifier = Modifier
-                .padding(12.dp)
+            modifier = Modifier.padding(12.dp)
         )
     }
 }
@@ -836,15 +805,21 @@ fun AltMainScreen(
         modifier = Modifier.safeDrawingPadding()
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize()
         ) {
+            Image(
+                painter = painterResource(R.drawable.lyfgdps_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
                     .padding(8.dp)
                     .verticalScroll(rememberScrollState())
             ) {
