@@ -183,7 +183,10 @@ fun LongPressButton(onClick: () -> Unit, onLongPress: () -> Unit, modifier: Modi
         modifier = modifier,
         interactionSource = interactionSource,
         colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFB5FFD1)
+            containerColor = Color(0xFFB5FFD1),
+            disabledContainerColor = Color(0xFFB5FFD1),
+            contentColor = Color(0xFF19352A),
+            disabledContentColor = Color(0xFF19352A)
         ),
         content = content
     )

@@ -251,11 +251,26 @@ data class LaunchStatusInfo(
 fun LaunchCancelledIcon(cancelReason: LaunchViewModel.LaunchCancelReason, modifier: Modifier = Modifier) {
     when (cancelReason) {
         LaunchViewModel.LaunchCancelReason.GAME_OUTDATED,
-        LaunchViewModel.LaunchCancelReason.GAME_MISSING -> Icon(painterResource(R.drawable.icon_error), contentDescription = null, modifier)
+        LaunchViewModel.LaunchCancelReason.GAME_MISSING -> Icon(
+            painterResource(R.drawable.icon_error),
+            contentDescription = null,
+            modifier = modifier,
+            tint = Color(0xFFB5FFD1)
+        )
         LaunchViewModel.LaunchCancelReason.LAST_LAUNCH_CRASHED,
         LaunchViewModel.LaunchCancelReason.LAST_LAUNCH_CRASHED_AUTOMATIC,
-        LaunchViewModel.LaunchCancelReason.GEODE_NOT_FOUND -> Icon(painterResource(R.drawable.icon_warning), contentDescription = null, modifier)
-        else -> Icon(painterResource(R.drawable.icon_info), contentDescription = null, modifier)
+        LaunchViewModel.LaunchCancelReason.GEODE_NOT_FOUND -> Icon(
+            painterResource(R.drawable.icon_warning),
+            contentDescription = null,
+            modifier = modifier,
+            tint = Color(0xFFB5FFD1)
+        )
+        else -> Icon(
+            painterResource(R.drawable.icon_info),
+            contentDescription = null,
+            modifier = modifier,
+            tint = Color(0xFFB5FFD1)
+        )
     }
 }
 
@@ -364,7 +379,8 @@ fun LaunchCancelledBody(statusInfo: LaunchStatusInfo, icon: @Composable () -> Un
             Text(
                 statusInfo.details,
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = Color(0xFFB5FFD1)
             )
         }
     }
