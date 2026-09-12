@@ -21,6 +21,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -66,10 +67,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
@@ -346,7 +347,7 @@ fun LaunchCancelledBody(statusInfo: LaunchStatusInfo, icon: @Composable () -> Un
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     icon()
                     Spacer(Modifier.size(8.dp))
-                    Text(statusInfo.title)
+                    Text(statusInfo.title, color = Color(0xffb5ffd1))
                 }
             }
         }
@@ -374,7 +375,7 @@ fun LaunchProgressBody(statusInfo: LaunchStatusInfo, modifier: Modifier = Modifi
         modifier = modifier.width(300.dp)
     ) {
         if (statusInfo.title != null) {
-            Text(statusInfo.title, style = MaterialTheme.typography.bodyLarge)
+            Text(statusInfo.title, style = MaterialTheme.typography.bodyLarge, color = Color(0xffb5ffd1))
         }
 
         if (statusInfo.progress != null) {
@@ -387,7 +388,7 @@ fun LaunchProgressBody(statusInfo: LaunchStatusInfo, modifier: Modifier = Modifi
         }
 
         if (statusInfo.details != null) {
-            Text(statusInfo.details, style = MaterialTheme.typography.bodyMedium)
+            Text(statusInfo.details, style = MaterialTheme.typography.bodyMedium, color = Color(0xffb5ffd1))
         }
     }
 }
@@ -713,23 +714,46 @@ fun AnimatedLogo(modifier: Modifier = Modifier, spec: AnimatedIconSpec) {
 
 @Composable
 fun GeodeLogo(modifier: Modifier = Modifier, shouldAnimate: Boolean = false, basePalette: BrandPalette = geodeColorPalette) {
-    Row(
+    FlowRow(
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        itemVerticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        Image(
-            painter = painterResource(R.drawable.lyfgdps_logo_foreground),
-            contentDescription = stringResource(R.string.launcher_logo_alt),
-            modifier = Modifier.size(84.dp),
-            contentScale = ContentScale.Fit
-        )
+        val theme = LocalTheme.current
+
+        if (basePalette.animatedIcon != null) {
+            Crossfade(
+                targetState = shouldAnimate,
+                animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+                label="logo fade"
+            ) { screen ->
+                when (screen) {
+                    true -> AnimatedLogo(modifier = Modifier.size(64.dp, 64.dp), spec = basePalette.animatedIcon)
+                    false -> Image(
+                        painterResource(if (theme == LIGHT)
+                            basePalette.lightLogo else basePalette.darkLogo
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp, 64.dp)
+                    )
+                }
+            }
+        } else {
+            Image(
+                painterResource(if (theme == LIGHT)
+                    basePalette.lightLogo else basePalette.darkLogo
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(84.dp, 84.dp)
+            )
+        }
 
         Text(
-            stringResource(R.string.launcher_title),
+            stringResource(basePalette.title),
             style = basePalette.titleFont,
             fontSize = 64.sp,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier
+                .padding(12.dp)
         )
     }
 }
@@ -805,72 +829,77 @@ fun AltMainScreen(
         modifier = Modifier.safeDrawingPadding()
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             Image(
                 painter = painterResource(R.drawable.lyfgdps_background),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState())
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                val sapphireLogo = remember {
-                    PreferenceUtils.get(context)
-                        .getString(PreferenceUtils.Key.SELECTED_ICON) == ApplicationIcon.SAPPHIRE.toId()
-                }
-
-                val basePalette = if (sapphireLogo) sapphireColorPalette
-                    else geodeColorPalette
-                GeodeLogo(shouldAnimate = launchUIState.isInProgress(), basePalette = basePalette)
-
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    LaunchProgressCard(
-                        launchUIState,
-                        crashInfo = launchViewModel.currentCrashInfo(),
-                        onCancel = {
-                            launchInSafeMode = false
-                            coroutineScope.launch {
-                                launchViewModel.cancelLaunch()
-                            }
-                        },
-                        onResume = { safeMode ->
-                            launchInSafeMode = safeMode
-
-                            launchViewModel.clearCrashInfo()
-                            coroutineScope.launch {
-                                launchViewModel.beginLaunchFlow(true)
-                            }
-                        },
-                        onMore = {
-                            showErrorInfo = true
-                        },
-                        extraOptions = {
-                            ExtraOptions(
-                                onSettings = {
-                                    coroutineScope.launch {
-                                        launchViewModel.cancelLaunch(true)
-                                    }
-
-                                    onSettings(context)
-                                }
-                            )
-                        },
-                        safeModeEnabled = launchInSafeMode
+                    Image(
+                        painter = painterResource(R.drawable.lyfgdps_logo),
+                        contentDescription = stringResource(R.string.launcher_logo_alt),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth(0.82f)
+                            .aspectRatio(2048f / 687f)
                     )
 
-                    // only show launcher update in a case where a user won't see it ingame
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        LaunchProgressCard(
+                            launchUIState,
+                            crashInfo = launchViewModel.currentCrashInfo(),
+                            onCancel = {
+                                launchInSafeMode = false
+                                coroutineScope.launch {
+                                    launchViewModel.cancelLaunch()
+                                }
+                            },
+                            onResume = { safeMode ->
+                                launchInSafeMode = safeMode
+
+                                launchViewModel.clearCrashInfo()
+                                coroutineScope.launch {
+                                    launchViewModel.beginLaunchFlow(true)
+                                }
+                            },
+                            onMore = {
+                                showErrorInfo = true
+                            },
+                            extraOptions = {
+                                ExtraOptions(
+                                    onSettings = {
+                                        coroutineScope.launch {
+                                            launchViewModel.cancelLaunch(true)
+                                        }
+
+                                        onSettings(context)
+                                    }
+                                )
+                            },
+                            safeModeEnabled = launchInSafeMode
+                        )
+
+                        // only show launcher update in a case where a user won't see it ingame
                     val currentUIState = launchUIState
                     if (currentUIState is LaunchViewModel.LaunchUIState.Cancelled) {
                         val gameVersion = remember { GamePackageUtils.getGameVersionCodeOrNull(context.packageManager) }
