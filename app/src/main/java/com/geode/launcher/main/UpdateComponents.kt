@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -225,24 +226,25 @@ fun LauncherUpdateDialog(isCancelling: Boolean, onDismiss: () -> Unit) {
         icon = {
             Icon(
                 painterResource(R.drawable.icon_update),
-                contentDescription = null
+                contentDescription = null,
+                tint = Color(0xFFB5FFD1)
             )
         },
         title = {
             if (isCancelling) {
-                Text(stringResource(R.string.release_fetch_cancelling))
+                Text(stringResource(R.string.release_fetch_cancelling), color = Color(0xFFB5FFD1))
             } else if (updateState == LauncherUpdater.LauncherUpdateState.Downloading) {
-                Text(stringResource(R.string.launcher_downloading_update))
+                Text(stringResource(R.string.launcher_downloading_update), color = Color(0xFFB5FFD1))
             } else {
-                Text(stringResource(R.string.launcher_self_update_progress))
+                Text(stringResource(R.string.launcher_self_update_progress), color = Color(0xFFB5FFD1))
             }
         },
         text = {
-            LinearProgressIndicator()
+            LinearProgressIndicator(color = Color(0xFFB5FFD1), trackColor = Color(0xFFB5FFD1).copy(alpha = 0.35f))
         },
         confirmButton = {
             TextButton(onClick = onDismiss, enabled = !isCancelling) {
-                Text(stringResource(R.string.message_box_cancel))
+                Text(stringResource(R.string.message_box_cancel), color = Color(0xFFB5FFD1))
             }
         },
         onDismissRequest = {}

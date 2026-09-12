@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -181,6 +182,9 @@ fun LongPressButton(onClick: () -> Unit, onLongPress: () -> Unit, modifier: Modi
         enabled = enabled,
         modifier = modifier,
         interactionSource = interactionSource,
+        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFB5FFD1)
+        ),
         content = content
     )
 }

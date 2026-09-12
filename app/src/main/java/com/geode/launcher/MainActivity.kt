@@ -347,13 +347,17 @@ fun LaunchCancelledBody(statusInfo: LaunchStatusInfo, icon: @Composable () -> Un
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     icon()
                     Spacer(Modifier.size(8.dp))
-                    Text(statusInfo.title, color = Color(0xffb5ffd1))
+                    Text(statusInfo.title, color = Color(0xFFB5FFD1))
                 }
             }
         }
 
         if (inProgress) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFB5FFD1),
+                trackColor = Color(0xFFB5FFD1).copy(alpha = 0.35f)
+            )
         }
 
         if (statusInfo.details != null) {
@@ -375,20 +379,26 @@ fun LaunchProgressBody(statusInfo: LaunchStatusInfo, modifier: Modifier = Modifi
         modifier = modifier.width(300.dp)
     ) {
         if (statusInfo.title != null) {
-            Text(statusInfo.title, style = MaterialTheme.typography.bodyLarge, color = Color(0xffb5ffd1))
+            Text(statusInfo.title, style = MaterialTheme.typography.bodyLarge, color = Color(0xFFB5FFD1))
         }
 
         if (statusInfo.progress != null) {
             LinearProgressIndicator(
                 statusInfo.progress,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFB5FFD1),
+                trackColor = Color(0xFFB5FFD1).copy(alpha = 0.35f)
             )
         } else {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFB5FFD1),
+                trackColor = Color(0xFFB5FFD1).copy(alpha = 0.35f)
+            )
         }
 
         if (statusInfo.details != null) {
-            Text(statusInfo.details, style = MaterialTheme.typography.bodyMedium, color = Color(0xffb5ffd1))
+            Text(statusInfo.details, style = MaterialTheme.typography.bodyMedium, color = Color(0xFFB5FFD1))
         }
     }
 }
@@ -482,7 +492,10 @@ fun LaunchProgressCard(
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.width(300.dp)) {
                     TextButton(onClick = onCancel) {
-                        Text(stringResource(R.string.release_fetch_button_cancel))
+                        Text(
+                            stringResource(R.string.release_fetch_button_cancel),
+                            color = Color(0xFFB5FFD1)
+                        )
                     }
 
                     Spacer(Modifier.weight(1.0f))
@@ -513,7 +526,8 @@ fun ExtraOptions(onSettings: () -> Unit) {
     ) {
         Icon(
             painterResource(R.drawable.icon_settings),
-            contentDescription = stringResource(R.string.launcher_settings_icon_alt)
+            contentDescription = stringResource(R.string.launcher_settings_icon_alt),
+            tint = Color(0xFFB5FFD1)
         )
     }
 }
