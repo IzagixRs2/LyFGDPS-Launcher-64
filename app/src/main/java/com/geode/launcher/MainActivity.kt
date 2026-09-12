@@ -936,3 +936,4 @@ fun AltMainScreen(
         ErrorInfoSheet(loadFailure, onDismiss = { showErrorInfo = false })
     }
 }
+}
