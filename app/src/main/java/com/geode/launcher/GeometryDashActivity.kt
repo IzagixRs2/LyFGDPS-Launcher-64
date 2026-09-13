@@ -675,10 +675,13 @@ class GeometryDashActivity : AppCompatActivity(), Cocos2dxHelper.Cocos2dxHelperL
             if (fileName.endsWith(".geode")) {
                 val modOutput = File(modDirectory, fileName)
 
-                val mod = assets.open("$internalModBase/$fileName")
-                DownloadUtils.copyFile(mod, modOutput.outputStream())
-
-                println("Copied internal mod $fileName")
+                if (!modOutput.exists()) {
+                    val mod = assets.open("$internalModBase/$fileName")
+                    DownloadUtils.copyFile(mod, modOutput.outputStream())
+                    println("Copied bundled mod $fileName")
+                } else {
+                    println("Keeping installed mod $fileName")
+                }
             }
         }
     }

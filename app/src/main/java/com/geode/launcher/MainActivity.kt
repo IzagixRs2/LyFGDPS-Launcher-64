@@ -85,6 +85,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.geode.launcher.main.*
 import com.izagix.lyf.gdp.GdpsConfig
 import com.izagix.lyf.gdp.GdpsInstaller
+import com.izagix.lyf.gdp.ModUpdater
 import com.geode.launcher.ui.theme.GeodeLauncherTheme
 import com.geode.launcher.ui.theme.LocalTheme
 import com.geode.launcher.ui.theme.Theme
@@ -177,7 +178,18 @@ class MainActivity : ComponentActivity() {
                 launchViewModel.launchArguments = launchArguments
             }
 
-            launchViewModel.beginLaunchFlow()
+            var lyfgdpsModsReady by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                if (GdpsInstaller.isInstalled(this@MainActivity)) {
+                    ModUpdater.updateMods(this@MainActivity)
+                }
+                lyfgdpsModsReady = true
+            }
+
+            if (lyfgdpsModsReady) {
+                launchViewModel.beginLaunchFlow()
+            }
 
             CompositionLocalProvider(LocalTheme provides theme) {
                 GeodeLauncherTheme(theme = theme, blackBackground = backgroundOption, dynamicColor = !dynamicColorOption) {
